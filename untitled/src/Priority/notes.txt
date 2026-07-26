@@ -1,0 +1,136 @@
+Thread2 executing first is completely normal. Setting a higher priority for Thread1 does not guarantee that it will run first.
+
+Why?
+
+When you call:
+
+t1.start();
+t2.start();
+
+both threads become Runnable. The JVM hands them over to the operating system's scheduler, and the OS decides which thread gets CPU time first.
+
+Even though:
+
+t1.setPriority(Thread.MAX_PRIORITY); // 10
+t2.setPriority(1);                   // MIN_PRIORITY
+
+Java only suggests a priority to the scheduler. Modern operating systems (Windows, Linux, macOS) often ignore Java thread priorities or use them only as a very weak hint.
+
+So any of these outputs are possible:
+
+Thread1 0
+Thread1 1
+Thread2 0
+...
+
+or
+
+Thread2 0
+Thread2 1
+Thread1 0
+...
+
+or
+
+Thread1 0
+Thread2 0
+Thread1 1
+Thread2 1
+...
+Your sleep(30) makes it even more likely
+
+Both threads do:
+
+Thread.sleep(30);
+
+Timeline:
+
+Main Thread
+    |
+    |-- t1.start()  -----> Thread1 sleeps for 30 ms
+    |
+    |-- t2.start()  -----> Thread2 sleeps for 30 ms
+
+After 30 ms:
+
+Thread1  ---- Ready
+Thread2  ---- Ready
+
+Now both wake up almost together, and the scheduler picks whichever it wants.
+
+Sometimes Thread2 wins.
+
+Sometimes Thread1 wins.
+
+Sometimes they alternate.
+
+Priority is NOT an execution order
+
+Many beginners think:
+
+Priority 10
+      ↓
+Runs first
+
+This is wrong.
+
+Priority only means:
+
+"If the scheduler considers priorities, this thread may get more CPU time."
+
+It does not mean
+
+start first ❌
+finish first ❌
+always execute first ❌
+If you want Thread1 to finish before Thread2
+
+Use join() before starting Thread2:
+
+t1.start();
+t1.join();   // Wait until Thread1 finishes
+
+t2.start();
+t2.join();
+
+Output:
+
+Thread1 0
+...
+Thread1 99
+Thread2 0
+...
+Thread2 99
+end
+If you want Thread1 to simply start first
+t1.start();
+Thread.sleep(1); // Small delay
+t2.start();
+
+Even this is not guaranteed, but it increases the chance.
+
+One more issue in your code
+
+Your main method is declared as:
+
+static void main() throws InterruptedException
+
+The JVM looks for:
+
+public static void main(String[] args) throws InterruptedException {
+    Thread t1 = new Thread1();
+    Thread t2 = new Thread2();
+
+    t1.setPriority(Thread.MAX_PRIORITY);
+    t2.setPriority(Thread.MIN_PRIORITY);
+
+    t1.start();
+    t2.start();
+
+    t1.join();
+    t2.join();
+
+    System.out.println("end");
+}
+
+Without the correct signature (public static void main(String[] args)), the JVM won't recognize it as the program entry point.
