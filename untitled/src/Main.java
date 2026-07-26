@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 
 class Thread1 implements Runnable
 {
@@ -34,6 +32,29 @@ public class Main
 
         t1.start();
         t2.start();
+
+        Thread three = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i=0;i<50;i++)
+                {
+                    System.out.println(i);
+                }
+            }
+        });  //using anonymous class
+
+
+       Thread four =new Thread(() -> {
+           for(int i=0;i<50;i++)
+           {
+               System.out.println(i);
+           }
+
+       });  //Replace with lambda
+
+
+
+
 
 
         System.out.println("Inbetween ");
