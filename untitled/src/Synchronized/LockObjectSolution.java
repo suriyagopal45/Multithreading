@@ -1,6 +1,10 @@
 package Synchronized;
 
-public class LockObject {
+public class LockObjectSolution {
+
+    // lock the object
+    private static final Object lock1 = new Object();
+    private static final Object lock2 = new Object();
     private static int counter1 = 0;
     private static int counter2 = 0;
 
@@ -30,14 +34,18 @@ public class LockObject {
 
     }
 
-    private synchronized static void increment1() {
-        counter1++;
+    private static void increment1() {
+        synchronized (lock1) {
+            counter1++;
+        }
+
     }
 
-    private synchronized static void increment2() {
-        counter2++;
+    private static void increment2() {
+        synchronized (lock1) {
+            counter2++;
+        }
     }
 
-    //eventhough it doesn't share the same resources one locks entire class so another thread 2 waits for release of thread 1
 
 }
