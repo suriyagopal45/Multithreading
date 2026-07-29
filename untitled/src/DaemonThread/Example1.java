@@ -51,3 +51,7 @@ public class Example1 {
 //Daemon Thread running
 //Daemon Thread running
 //user Thread finished
+
+
+//Daemon Thread runs for 1000 times but
+//there is no active thread so it couldn't run
