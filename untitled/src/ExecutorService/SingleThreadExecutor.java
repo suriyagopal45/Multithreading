@@ -34,7 +34,7 @@ class Task implements Runnable {
         System.out.println(taskId + " running " + Thread.currentThread().getName());
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(7000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
