@@ -19,7 +19,6 @@ public class Scheduled {
         try {
             if (!service.awaitTermination(10000, TimeUnit.MILLISECONDS)) {
                 service.shutdownNow();
-
             }
         } catch (InterruptedException e) {
             service.shutdownNow();
